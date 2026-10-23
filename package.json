@@ -1,0 +1,43 @@
+{
+  "name": "@qawolf/upload-build-action",
+  "version": "v1.0.0",
+  "private": false,
+  "type": "module",
+  "sideEffects": false,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "rm -rf ./dist && node esbuild.mjs",
+    "gen": "npm run build",
+    "lint:ci": "npm run lint:first-half; FIRST_HALF_EXIT=$?; npm run lint:second-half && exit $FIRST_HALF_EXIT",
+    "lint:dev": "npm run lint:first-half",
+    "lint:first-half": "oxlint . --fix --quiet --report-unused-disable-directives --type-aware && oxfmt --write .",
+    "lint:second-half": "rev-dep config run",
+    "test": "NODE_OPTIONS=\"--experimental-vm-modules\" NODE_NO_WARNINGS=1 jest --passWithNoTests",
+    "tsc:check": "tsc"
+  },
+  "dependencies": {
+    "@actions/core": "^2.0.3",
+    "@actions/github": "^9.1.1",
+    "@qawolf/ci-sdk": ">=3.5.0",
+    "@qawolf/ci-utils": "*",
+    "tslib": "^2.5.3"
+  },
+  "devDependencies": {
+    "esbuild": "^0.28.2"
+  },
+  "engines": {
+    "node": ">=24.14.1 <25"
+  },
+  "nx": {
+    "targets": {
+      "gen": {
+        "dependsOn": [
+          "^build"
+        ],
+        "outputs": [
+          "{projectRoot}/dist"
+        ]
+      }
+    }
+  }
+}

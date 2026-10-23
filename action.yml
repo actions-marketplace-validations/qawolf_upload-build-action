@@ -1,0 +1,51 @@
+name: "Upload build to QA Wolf"
+description: "Uploads an Android .apk or .aab, or an iOS .ipa build to QA Wolf so runs can install it"
+branding:
+  icon: "upload-cloud"
+  color: "purple"
+inputs:
+  qawolf-api-key:
+    description: "QA Wolf API key. You can find it in the application workspace settings page."
+    required: true
+  input-file-path:
+    description: "Path to the .apk, .aab or .ipa file to upload, at most 500 MB."
+    required: true
+  workspace-id:
+    description: "The id of the QA Wolf workspace to upload into. Required when the API key belongs to an organization or a user rather than a single workspace."
+    required: false
+  environment:
+    description: "The name or alias of the QA Wolf environment whose runs install the build from now on, until a newer build of the same app and platform arrives. Creates the environment when none matches. Omit it, together with environment-id, for a build that only runs created with it install."
+    required: false
+  environment-id:
+    description: "The id of an existing QA Wolf environment whose runs install the build. Use instead of environment; never creates an environment."
+    required: false
+  ephemeral-environment:
+    description: "Set to true when environment names an ephemeral environment that QA Wolf should create for this build."
+    required: false
+  base-environment:
+    description: "The name or alias of the environment a created ephemeral environment copies from. Only valid with ephemeral-environment."
+    required: false
+  branch:
+    description: "The git branch the build came from. Extracted from the event when omitted."
+    required: false
+  commit-sha:
+    description: "The SHA of the commit the build came from. Extracted from the event when omitted."
+    required: false
+  qawolf-base-url:
+    description: "The base URL of the QA Wolf API."
+    required: false
+    default: "https://app.qawolf.com"
+outputs:
+  build-id:
+    description: "The id of the build QA Wolf created."
+  app-id:
+    description: "The package name (Android) or bundle ID (iOS) QA Wolf read from the file. A flow launches the app with launch({ app: { id } })."
+  platform:
+    description: "The platform the build runs on: android or ios."
+  version:
+    description: "The versionName (Android) or CFBundleShortVersionString (iOS) of the build. Empty when the file has none."
+  build-number:
+    description: "The versionCode (Android) or CFBundleVersion (iOS) of the build. Empty when the file has none."
+runs:
+  using: "node24"
+  main: "dist/index.js"
